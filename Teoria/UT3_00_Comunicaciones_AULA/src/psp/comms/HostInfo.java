@@ -30,24 +30,39 @@ public class HostInfo {
             while (interfaces.hasMoreElements()) {
                 NetworkInterface ni = interfaces.nextElement();
 
-                // Para recuperar el nombre de la interfaz
-                System.out.println("Nombre de la interfaz: " + ni.getName());
+                // PAra limpiar y que no salgan las que no se usan
+                // if (!ni.isLoopback() && ni.isUp() && ni.getInterfaceAddresses().isEmpty()) {
 
-                // Para decirnos si esta activa la interfaz
-                System.out.println("Interfaz activa: " + ni.isUp());
+                    // Para recuperar el nombre de la interfaz
+                    System.out.println("Nombre de la interfaz: " + ni.getName());
 
-                // Para recuperar la MAC que tiene cada interfaz
-                System.out.println("MAC Address: " + Arrays.toString(ni.getHardwareAddress()));
+                    // Para decirnos si esta activa la interfaz
+                    System.out.println("Interfaz activa: " + ni.isUp());
 
-                Enumeration<InetAddress> direcciones = ni.getInetAddresses();
-                while (direcciones.hasMoreElements()) {
-                    InetAddress ip = direcciones.nextElement();
+                    // Para recuperar la MAC que tiene cada interfaz, y convertirlo a hexadecimal
+                    byte[] MACbytes = ni.getHardwareAddress();
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < MACbytes.length; i++) {
+                        // En la expresion regular, hace: la X es para pasarlo a hexadecimal, y el 02 es para que tenga una
+                        // logitud de 2 y lo que falte se rellene con 0
+                        sb.append(String.format("%02X", MACbytes[i]));
+                        if (i < MACbytes.length - 1) {
+                            sb.append(":");
+                        }
+                    }
+                    System.out.println("MAC Address: " + sb);
 
-                    // Para recuperar cada direccion ip que tiene cada interfaz
-                    System.out.println("\tDirección IP: " + ip.getHostAddress());
+
+                    Enumeration<InetAddress> direcciones = ni.getInetAddresses();
+                    while (direcciones.hasMoreElements()) {
+                        InetAddress ip = direcciones.nextElement();
+
+                        // Para recuperar cada direccion ip que tiene cada interfaz
+                        System.out.println("\tDirección IP: " + ip.getHostAddress());
+                    }
+
                 }
-
-            }
+            // }
 
         } catch (SocketException e) {
             throw new RuntimeException(e);
